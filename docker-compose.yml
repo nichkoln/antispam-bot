@@ -1,0 +1,36 @@
+version: '3'
+services:
+  bot_1:
+    build:
+      context: ./goBot 
+    container_name: go_bot_1
+    environment:
+      - TELEGRAM_BOT_TOKEN=
+      - ADMIN_CHAT_ID=
+      - ALLOWED_CHATS=
+    volumes:
+      -  :/app/DB #путь к дирректории с бд пользователей
+    depends_on:
+      - pyrobertaapi_1
+    networks:
+      - botnet
+    restart: always
+
+
+  pyrobertaapi_1:
+    build:
+      context: ./pyroberta 
+    container_name: python_api_1
+    ports:
+      - "8001:8001"  
+    volumes:
+      - :/app/model_data  # путь к дирректории с моделью для монтирования внутрь контейнера
+    environment:
+      - TRANSFORMERS_CACHE=/app/model_data  # кеш для загрузки моделей
+    networks:
+      - botnet
+    restart: always  
+
+networks:
+  botnet:
+
